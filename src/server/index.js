@@ -186,20 +186,20 @@ function buildDashboard(studentId) {
 
   const stage =
     acceptedCount >= 15
-      ? { label: '街の守り樹', level: 4 }
+      ? { label: '満開のソメイヨシノ', level: 4 }
       : acceptedCount >= 8
-        ? { label: '花咲く成長期', level: 3 }
+        ? { label: '五分咲き', level: 3 }
         : acceptedCount >= 4
-          ? { label: '若木フェーズ', level: 2 }
+          ? { label: 'つぼみフェーズ', level: 2 }
           : acceptedCount >= 1
             ? { label: '芽吹きフェーズ', level: 1 }
-            : { label: '種フェーズ', level: 0 };
+            : { label: '植樹フェーズ', level: 0 };
 
   const virtueMeta = {
-    childcare: { label: '育児支援', color: '#ff946a' },
-    multicultural: { label: '多文化交流', color: '#6ec6ff' },
-    beautification: { label: '地域美化', color: '#8ad96c' },
-    mobility: { label: '移動助っ人', color: '#f5ca62' },
+    childcare: { label: '育児支援', color: '#f7a0b8' },
+    multicultural: { label: '多文化交流', color: '#f5c2d4' },
+    beautification: { label: '地域美化', color: '#fbd5e3' },
+    mobility: { label: '移動助っ人', color: '#e8789a' },
   };
 
   const virtues = Object.entries(virtueCounter).map(([key, count]) => ({
@@ -217,12 +217,23 @@ function buildDashboard(studentId) {
 
   const badges = buildBadgeProgress(activities);
 
+  const thanksMessages = [
+    'いつも来てくれてありがとう。あなたがいると場が明るくなるって、常連さんも言ってたよ。',
+    'おかげさまで本当に助かりました。うちの孫と同い年くらいかな、また気軽に来てね。',
+    'この前教えてもらったやり方、まだちゃんと覚えてるよ！また来てくれたら嬉しいな。',
+    'あなたが手伝ってくれた日は、いつもより笑い声が多い気がするんです。ありがとう。',
+    '若い人が来てくれるだけで元気が出るのよ。無理しないで、また空いてるときにね。',
+    '子どもたちが「また来て！」って言ってたよ。あなたの読み聞かせ、人気だったみたい。',
+    '一緒に打ち水してくれてありがとう。通りがかりのお客さんにも褒められちゃったよ。',
+    'ナマステ！あなたが書いてくれたPOP、お客さんに大好評です。本当にありがとう！',
+  ];
+
   const thanksWall = activities.slice(0, 8).map((item, index) => ({
     id: `${item.application.id}-${index}`,
     from: item.provider ? item.provider.name : '地域の方',
     area: resolveArea(item.gig.locationArea),
     at: item.application.createdAt,
-    message: `${item.gig.title}を助けてくれて本当に助かりました。次もぜひお願いします。`,
+    message: thanksMessages[index % thanksMessages.length],
     tone: index % 2 === 0 ? 'warm' : 'fresh',
   }));
 
@@ -291,81 +302,93 @@ function seedDemoData() {
   }
 
   const studentA = eligibilityService.registerStudent({
-    name: '池袋 花子',
+    name: '染井 さくら',
     schoolType: 'university',
-    schoolName: '豊島未来大学',
+    schoolName: '立教大学',
     ward: '豊島区',
   });
 
   const studentB = eligibilityService.registerStudent({
-    name: '大塚 太郎',
+    name: '雑司ヶ谷 ゆうと',
     schoolType: 'highschool',
-    schoolName: '豊島学園高校',
+    schoolName: '豊島高校',
     ward: '豊島区',
   });
 
   const providerA = eligibilityService.registerProvider({
-    name: '巣鴨和菓子 さくら庵',
+    name: 'すがも園 よしだ',
     providerType: 'sole_proprietor',
     ward: '豊島区',
   });
 
   const providerB = eligibilityService.registerProvider({
-    name: '池袋コミュニティスペース ひだまり',
+    name: '雑司が谷 みらい子ども食堂',
     providerType: 'community_facility',
     ward: '豊島区',
   });
 
   const providerC = eligibilityService.registerProvider({
-    name: '目白グローバル食堂',
+    name: 'カフェ・ナマステ 大塚店',
     providerType: 'sole_proprietor',
+    ward: '豊島区',
+  });
+
+  const providerD = eligibilityService.registerProvider({
+    name: '駒込銭湯 殿上湯',
+    providerType: 'sole_proprietor',
+    ward: '豊島区',
+  });
+
+  const providerE = eligibilityService.registerProvider({
+    name: '目白台 よりあい広場',
+    providerType: 'community_facility',
     ward: '豊島区',
   });
 
   const acceptedScenarios = [
     {
-      providerId: providerB.id,
-      studentId: studentA.id,
-      title: '宿題見守りサポート',
-      description: '親御さんの作業中に60分の宿題見守り',
-      category: '育児支援',
-      locationArea: '池袋',
-      durationMinutes: 60,
-      rewardType: 'hospitality',
-      hospitalityDetail: 'ドリンクとお礼カード',
-    },
-    {
       providerId: providerA.id,
       studentId: studentA.id,
-      title: 'ベビーカー階段サポート',
-      description: '駅階段での移動助っ人',
+      title: '買い物袋持ち帰りのお手伝い',
+      description: 'よしださんの奥さんがスーパーで買いすぎちゃって…。お店からお家まで一緒に持って帰ってくれると助かります',
       category: '移動助っ人',
       locationArea: '巣鴨',
-      durationMinutes: 30,
+      durationMinutes: 20,
       rewardType: 'hospitality',
-      hospitalityDetail: '和菓子セット',
+      hospitalityDetail: '塩大福と麦茶',
     },
     {
       providerId: providerC.id,
       studentId: studentA.id,
-      title: 'メニュー日本語校正',
-      description: '外国人店主向けに30分の日本語チェック',
+      title: 'お店の日本語メニュー手書き',
+      description: 'ラムさんが新しいカレーを出すんだけど、日本語の手書きメニューが上手く書けなくて。一緒に書いてくれる？',
       category: '多文化交流',
+      locationArea: '大塚',
+      durationMinutes: 30,
+      rewardType: 'hospitality',
+      hospitalityDetail: 'できたてのチャイとカレー',
+    },
+    {
+      providerId: providerE.id,
+      studentId: studentA.id,
+      title: 'おじいちゃんのLINE設定',
+      description: '「孫にLINEしたいんだけど文字が小さくて…」田中さん（82歳）のスマホ設定を一緒にやってほしい',
+      category: '生活支援',
       locationArea: '目白',
       durationMinutes: 30,
-      rewardType: 'cash',
-      cashAmount: 1800,
+      rewardType: 'hospitality',
+      hospitalityDetail: 'おばあちゃん手作りの煮物',
     },
     {
       providerId: providerB.id,
       studentId: studentA.id,
-      title: '高齢者スマホお困り解決',
-      description: '文字サイズ設定とLINE操作の説明',
-      category: '生活支援',
-      locationArea: '大塚',
-      durationMinutes: 30,
+      title: 'お迎え待ちの子どもと遊ぶ',
+      description: 'お母さんが15分だけ遅れるとき、子どもと一緒に絵を描いたりして待っててくれると助かります',
+      category: '育児支援',
+      locationArea: '雑司が谷',
+      durationMinutes: 20,
       rewardType: 'hospitality',
-      hospitalityDetail: '地域イベント招待券',
+      hospitalityDetail: 'おやつのホットケーキ',
     },
   ];
 
@@ -381,63 +404,83 @@ function seedDemoData() {
   const openScenarios = [
     {
       providerId: providerA.id,
-      title: '和菓子屋の陳列お手伝い',
-      description: '開店前の陳列を30分だけお手伝い',
-      category: '店舗サポート',
-      locationArea: '巣鴨',
-      durationMinutes: 30,
-      rewardType: 'hospitality',
-      hospitalityDetail: 'できたて大福',
-    },
-    {
-      providerId: providerB.id,
-      title: 'イベント設営サポート',
-      description: '公民館イベントの椅子並べと案内',
-      category: '地域イベント',
-      locationArea: '雑司が谷',
-      durationMinutes: 45,
-      rewardType: 'hospitality',
-      hospitalityDetail: '豊島区イベント無料招待',
-    },
-    {
-      providerId: providerC.id,
-      title: '買い物袋運搬サポート',
-      description: '高齢者宅まで買い物袋を運ぶ',
-      category: '移動助っ人',
-      locationArea: '目白',
-      durationMinutes: 30,
-      rewardType: 'cash',
-      cashAmount: 1200,
-    },
-    {
-      providerId: providerB.id,
-      title: '放課後の学習見守り',
-      description: 'コミュニティスペースでの宿題見守り',
-      category: '育児支援',
-      locationArea: '池袋',
-      durationMinutes: 60,
-      rewardType: 'hospitality',
-      hospitalityDetail: 'まかないカレー',
-    },
-    {
-      providerId: providerC.id,
-      title: '英語メニューの日本語ニュアンス調整',
-      description: '多文化店舗のメニュー改善',
-      category: '多文化交流',
-      locationArea: '要町',
-      durationMinutes: 30,
-      rewardType: 'cash',
-      cashAmount: 1500,
-    },
-    {
-      providerId: providerA.id,
-      title: '商店街花壇の水やり',
-      description: '駅前花壇の軽作業',
+      title: 'お店の前の落ち葉はき',
+      description: 'この時期は落ち葉がすごくて…。開店前にお店の前だけサッと掃いてくれると助かります',
       category: '地域美化',
+      locationArea: '巣鴨',
+      durationMinutes: 20,
+      rewardType: 'hospitality',
+      hospitalityDetail: 'みたらし団子とお茶',
+    },
+    {
+      providerId: providerD.id,
+      title: 'お風呂上がりのおじいちゃんの話し相手',
+      description: '常連の佐藤さん、お風呂上がりにいつも一人でラムネ飲んでるんです。30分くらいおしゃべり相手になってくれませんか',
+      category: '生活支援',
       locationArea: '駒込',
       durationMinutes: 30,
       rewardType: 'hospitality',
-      hospitalityDetail: '季節のどら焼き',
+      hospitalityDetail: '瓶ラムネと入浴券',
+    },
+    {
+      providerId: providerC.id,
+      title: 'ランチのお皿洗い助っ人',
+      description: 'お昼どきだけお皿が追いつかなくて。30分だけ洗い物手伝ってくれたら、ごはん食べていって！',
+      category: '店舗サポート',
+      locationArea: '大塚',
+      durationMinutes: 30,
+      rewardType: 'hospitality',
+      hospitalityDetail: 'ナンカレーセット',
+    },
+    {
+      providerId: providerE.id,
+      title: '回覧板を3軒に届ける',
+      description: '足が悪くて回覧板を回せなくなっちゃって…。ご近所3軒にポストインしてくれるだけで大丈夫です',
+      category: '生活支援',
+      locationArea: '目白',
+      durationMinutes: 15,
+      rewardType: 'hospitality',
+      hospitalityDetail: '庭で採れたみかん',
+    },
+    {
+      providerId: providerB.id,
+      title: '公園で子どもの見守り',
+      description: 'ちょっとだけ目を離せない子どもたち。ベンチに座って見ててくれるだけで、お母さんたちは安心です',
+      category: '育児支援',
+      locationArea: '雑司が谷',
+      durationMinutes: 30,
+      rewardType: 'hospitality',
+      hospitalityDetail: 'おにぎりとお味噌汁',
+    },
+    {
+      providerId: providerA.id,
+      title: '重い荷物の二階への運び上げ',
+      description: 'お米とお砂糖の袋が届いたんだけど、腰が痛くて二階に上げられなくて…。5分で終わります',
+      category: '移動助っ人',
+      locationArea: '巣鴨',
+      durationMinutes: 15,
+      rewardType: 'hospitality',
+      hospitalityDetail: 'どら焼きとお茶',
+    },
+    {
+      providerId: providerD.id,
+      title: '自転車のパンク修理を一緒に',
+      description: 'うちのおじいちゃんが自転車のパンク修理やりたいけど目が見えにくくて。横で手元を見てくれるだけでいいんです',
+      category: '生活支援',
+      locationArea: '駒込',
+      durationMinutes: 30,
+      rewardType: 'hospitality',
+      hospitalityDetail: 'アイスキャンディー',
+    },
+    {
+      providerId: providerC.id,
+      title: 'ゴミ出しの曜日を教えてあげて',
+      description: '最近引っ越してきたネパール人の家族がゴミの分別がわからなくて困ってます。一緒に説明してくれませんか',
+      category: '多文化交流',
+      locationArea: '大塚',
+      durationMinutes: 20,
+      rewardType: 'hospitality',
+      hospitalityDetail: 'ラッシーとサモサ',
     },
   ];
 

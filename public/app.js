@@ -11,6 +11,32 @@ const timeFormat = new Intl.DateTimeFormat('ja-JP', {
   second: '2-digit',
 });
 
+/* ── Tab navigation ── */
+const tabButtons = document.querySelectorAll('.tab-btn');
+const tabContents = document.querySelectorAll('.tab-content');
+
+function switchTab(tabId) {
+  tabButtons.forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.tab === tabId);
+  });
+  tabContents.forEach((content) => {
+    content.classList.toggle('active', content.id === `tab-${tabId}`);
+  });
+
+  if (tabId === 'quests') {
+    renderGigs().catch((error) => appendLog(`クエスト更新失敗: ${error.message}`, true));
+    updateOnboardingBanner();
+  }
+  if (tabId === 'mypage' || tabId === 'thanks') {
+    loadAndRenderDashboard().catch((error) => appendLog(`マイページ更新失敗: ${error.message}`, true));
+  }
+}
+
+tabButtons.forEach((btn) => {
+  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+});
+
+/* ── DOM elements ── */
 const studentForm = document.getElementById('student-form');
 const providerForm = document.getElementById('provider-form');
 const gigForm = document.getElementById('gig-form');
@@ -19,7 +45,11 @@ const rewardTypeSelect = document.getElementById('reward-type');
 const rewardLabel = document.getElementById('reward-label');
 const rewardValue = document.getElementById('reward-value');
 const seedDemoButton = document.getElementById('seed-demo');
+const seedDemoInlineButton = document.getElementById('seed-demo-inline');
 const refreshAllButton = document.getElementById('refresh-all');
+const ctaFindQuest = document.getElementById('cta-find-quest');
+const ctaDemo = document.getElementById('cta-demo');
+const onboardingBanner = document.getElementById('onboarding-banner');
 
 const slotTemplate = document.getElementById('slot-template');
 const slotMinutesInput = document.getElementById('slot-minutes');
@@ -48,9 +78,6 @@ const areaMap = document.getElementById('area-map');
 const badgeList = document.getElementById('badge-list');
 const thanksWall = document.getElementById('thanks-wall');
 const hospitalityGallery = document.getElementById('hospitality-gallery');
-const assetGrid = document.getElementById('asset-grid');
-const assetMeters = document.getElementById('asset-meters');
-const digestList = document.getElementById('digest-list');
 const logFeed = document.getElementById('log-feed');
 
 const SLOT_PRESETS = {
@@ -135,7 +162,7 @@ function fillSelect(select, items, labelBuilder) {
   if (!items.length) {
     const empty = document.createElement('option');
     empty.value = '';
-    empty.textContent = 'データなし';
+    empty.textContent = '学生を選択してください';
     select.appendChild(empty);
     return;
   }
@@ -164,10 +191,16 @@ function syncSelectedStudent(idFromAction) {
 }
 
 function syncSelects(preferredStudentId) {
-  fillSelect(providerSelect, state.providers, (provider) => `${provider.id} / ${provider.name}`);
-  fillSelect(studentApplySelect, state.students, (student) => `${student.id} / ${student.name}`);
-  fillSelect(studentDashboardSelect, state.students, (student) => `${student.id} / ${student.name}`);
+  fillSelect(providerSelect, state.providers, (provider) => `${provider.name}`);
+  fillSelect(studentApplySelect, state.students, (student) => student.name);
+  fillSelect(studentDashboardSelect, state.students, (student) => student.name);
   syncSelectedStudent(preferredStudentId);
+}
+
+function updateOnboardingBanner() {
+  if (onboardingBanner) {
+    onboardingBanner.style.display = state.students.length === 0 ? 'block' : 'none';
+  }
 }
 
 async function loadBootstrap(preferredStudentId) {
@@ -175,6 +208,7 @@ async function loadBootstrap(preferredStudentId) {
   state.students = result.students;
   state.providers = result.providers;
   syncSelects(preferredStudentId);
+  updateOnboardingBanner();
 }
 
 function rewardIcon(reward) {
@@ -204,20 +238,7 @@ function rewardText(reward) {
 }
 
 function appRows(gig) {
-  if (!gig.applications || !gig.applications.length) {
-    return '<p class="quest-meta">応募はまだありません</p>';
-  }
-
-  return gig.applications
-    .map((application) => {
-      const studentName = application.student ? application.student.name : application.studentId;
-      return `<div class="chip">${escapeHtml(studentName)} / ${escapeHtml(application.status)} ${
-        application.status === 'pending'
-          ? `<button data-accept="${escapeHtml(application.id)}" type="button" class="btn-ghost">採用</button>`
-          : ''
-      }</div>`;
-    })
-    .join('');
+  return '';
 }
 
 function matchingScore(gig, slotMinutes, slotArea) {
@@ -246,7 +267,11 @@ async function renderGigs() {
     .sort((a, b) => matchingScore(b, slotMinutes, slotArea) - matchingScore(a, slotMinutes, slotArea));
 
   if (!matched.length) {
-    gigList.innerHTML = '<div class="quest-card">条件に合うクエストがありません。テンプレートか絞り込み条件を変更してください。</div>';
+    gigList.innerHTML = `<div class="empty-state">
+      <div class="empty-state-icon" aria-hidden="true">&#128270;</div>
+      <h3>条件に合うクエストがありません</h3>
+      <p>テンプレートか絞り込み条件を変更してみましょう</p>
+    </div>`;
     return;
   }
 
@@ -268,12 +293,11 @@ async function renderGigs() {
           <span class="chip">${escapeHtml(gig.locationArea || '池袋')}</span>
           <span class="chip">${escapeHtml(gig.category)}</span>
           <span class="chip">${rewardIcon(gig.reward)} ${escapeHtml(rewardText(gig.reward))}</span>
-          <span class="chip">投稿: ${escapeHtml(providerName)}</span>
+          <span class="chip">${escapeHtml(providerName)}</span>
         </div>
         <div class="quest-actions">
-          <button data-apply="${escapeHtml(gig.id)}" class="btn-sub" type="button">選択中の学生で応募</button>
+          <button data-apply="${escapeHtml(gig.id)}" class="btn-sub" type="button">このクエストに応募</button>
         </div>
-        <div class="chips" style="margin-top:8px;">${appRows(gig)}</div>
       </article>`;
     })
     .join('');
@@ -298,21 +322,37 @@ function renderTreeFruitCloud(virtues) {
     return;
   }
 
+  // Render blossoms on the crown
   pool.slice(0, FRUIT_POSITIONS.length).forEach((color, index) => {
     const [left, top] = FRUIT_POSITIONS[index];
-    const fruit = document.createElement('span');
-    fruit.className = 'tree-fruit';
-    fruit.style.left = `${left}%`;
-    fruit.style.top = `${top}%`;
-    fruit.style.background = color;
-    treeFruitCloud.appendChild(fruit);
+    const blossom = document.createElement('span');
+    blossom.className = 'tree-fruit';
+    blossom.style.left = `${left}%`;
+    blossom.style.top = `${top}%`;
+    blossom.style.background = color;
+    treeFruitCloud.appendChild(blossom);
   });
+
+  // Add falling petals
+  const petalCount = Math.min(pool.length, 8);
+  for (let i = 0; i < petalCount; i += 1) {
+    const petal = document.createElement('span');
+    petal.className = 'tree-petal';
+    const startLeft = 20 + Math.random() * 60;
+    const startTop = 15 + Math.random() * 30;
+    petal.style.left = `${startLeft}%`;
+    petal.style.top = `${startTop}%`;
+    petal.style.background = pool[i % pool.length];
+    petal.style.animationDuration = `${3 + Math.random() * 4}s`;
+    petal.style.animationDelay = `${Math.random() * 5}s`;
+    treeFruitCloud.appendChild(petal);
+  }
 }
 
 function renderDashboard(dashboard) {
   const stageLevel = Number(dashboard.tree.stage.level || 0);
 
-  treeStage.textContent = `${dashboard.student.name}さんのトシマ・ツリー: ${dashboard.tree.stage.label} / 活動${formatNumber(dashboard.summary.acceptedCount)}回`;
+  treeStage.textContent = `${dashboard.student.name}さんのソメイヨシノ: ${dashboard.tree.stage.label} / 活動${formatNumber(dashboard.summary.acceptedCount)}回`;
 
   if (treeTrunk) {
     treeTrunk.style.height = `${Math.max(30, dashboard.tree.heightPercent)}%`;
@@ -346,7 +386,7 @@ function renderDashboard(dashboard) {
 
   virtueFruits.innerHTML = dashboard.tree.virtues
     .map(
-      (virtue) => `<div class="fruit-item"><strong><span class="fruit-dot" style="background:${escapeHtml(virtue.color)}"></span>${escapeHtml(virtue.label)}</strong><div>${formatNumber(virtue.count)}個の実</div></div>`
+      (virtue) => `<div class="fruit-item"><strong><span class="fruit-dot" style="background:${escapeHtml(virtue.color)}"></span>${escapeHtml(virtue.label)}</strong><div>${formatNumber(virtue.count)}輪の花</div></div>`
     )
     .join('');
 
@@ -369,7 +409,11 @@ function renderDashboard(dashboard) {
           (note) => `<article class="sticky-note ${escapeHtml(note.tone)}"><p>${escapeHtml(note.message)}</p><span>${escapeHtml(note.from)} / ${escapeHtml(note.area)}</span></article>`
         )
         .join('')
-    : '<div class="card-lite">まだメッセージはありません。採用確定後に蓄積されます。</div>';
+    : `<div class="empty-state">
+        <div class="empty-state-icon" aria-hidden="true">&#128140;</div>
+        <h3>メッセージはまだありません</h3>
+        <p>クエストに参加して採用されると、事業者からのメッセージが届きます</p>
+      </div>`;
 
   hospitalityGallery.innerHTML = dashboard.hospitalityGallery.length
     ? dashboard.hospitalityGallery
@@ -377,44 +421,8 @@ function renderDashboard(dashboard) {
           (item) => `<article class="gallery-item"><div class="gallery-icon">${escapeHtml(item.icon)}</div><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.providerName)}</span><span>${escapeHtml(item.caption)}</span></article>`
         )
         .join('')
-    : '<div class="card-lite">おもてなし履歴がまだありません。</div>';
+    : '<div class="card-lite" style="grid-column:1/-1;text-align:center;padding:20px;color:var(--ink-500);">おもてなし履歴がまだありません</div>';
 
-  assetGrid.innerHTML = [
-    { label: '未来ポイント', value: `${formatNumber(dashboard.assets.points)} pt` },
-    { label: '保育園入園調整指数', value: `+${formatNumber(dashboard.assets.childcareIndex)} 相当` },
-    { label: '出会った人数', value: `${formatNumber(dashboard.summary.metPeople)} 人` },
-    { label: '累計活動時間', value: `${formatNumber(dashboard.summary.totalMinutes)} 分` },
-  ]
-    .map(
-      (item) => `<article class="asset-card"><strong>${escapeHtml(item.label)}</strong><b>${escapeHtml(item.value)}</b></article>`
-    )
-    .join('');
-
-  const renovationProgress = Math.min(100, Math.round((dashboard.assets.points / 1800) * 100));
-  const returnProgress = Math.min(100, Math.round(((20 - dashboard.assets.returnCounterRemaining) / 20) * 100));
-
-  assetMeters.innerHTML = `
-    <article class="meter-item">
-      <label for="renovation-meter">リノベ優先案内の進捗</label>
-      <progress id="renovation-meter" max="100" value="${renovationProgress}"></progress>
-      <p class="meter-label">リノベ優先案内まであと ${formatNumber(dashboard.assets.renovationRemaining)} pt</p>
-    </article>
-    <article class="meter-item">
-      <label for="return-meter">おかえりカウンター</label>
-      <progress id="return-meter" max="100" value="${returnProgress}"></progress>
-      <p class="meter-label">達成まであと ${formatNumber(dashboard.assets.returnCounterRemaining)} 回</p>
-    </article>
-  `;
-
-  digestList.innerHTML = [
-    { key: '豊島区を救った回数', value: `${formatNumber(dashboard.summary.acceptedCount)}回` },
-    { key: '移動助っ人回数', value: `${formatNumber(dashboard.digest.rescues)}回` },
-    { key: '10年換算の地域接点', value: `${formatNumber(dashboard.digest.yearsProjection)}件` },
-  ]
-    .map(
-      (item) => `<article class="digest-item"><strong>${escapeHtml(item.key)}</strong><b>${escapeHtml(item.value)}</b></article>`
-    )
-    .join('');
 }
 
 async function loadAndRenderDashboard() {
@@ -427,6 +435,34 @@ async function loadAndRenderDashboard() {
   renderDashboard(dashboard);
 }
 
+/* ── Seed demo helper ── */
+async function seedDemo() {
+  try {
+    const result = await request('/api/demo/seed', {
+      method: 'POST',
+      body: JSON.stringify({}),
+    });
+    state.students = result.students;
+    state.providers = result.providers;
+    syncSelects(result.recommendedStudentId);
+    updateOnboardingBanner();
+    appendLog(result.seeded ? 'デモデータを投入しました' : 'デモデータは投入済みです');
+    await renderGigs();
+    await loadAndRenderDashboard();
+  } catch (error) {
+    appendLog(`デモ投入失敗: ${error.message}`, true);
+  }
+}
+
+/* ── Event listeners ── */
+
+// Hero CTA buttons
+ctaFindQuest.addEventListener('click', () => switchTab('quests'));
+ctaDemo.addEventListener('click', async () => {
+  await seedDemo();
+  switchTab('quests');
+});
+
 studentForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   const formData = new FormData(studentForm);
@@ -438,6 +474,7 @@ studentForm.addEventListener('submit', async (event) => {
     });
     state.students.push(student);
     syncSelects(student.id);
+    updateOnboardingBanner();
     appendLog(`学生登録: ${student.name}`);
     studentForm.reset();
     studentForm.ward.value = '豊島区';
@@ -515,22 +552,13 @@ gigForm.addEventListener('submit', async (event) => {
   }
 });
 
-seedDemoButton.addEventListener('click', async () => {
-  try {
-    const result = await request('/api/demo/seed', {
-      method: 'POST',
-      body: JSON.stringify({}),
-    });
-    state.students = result.students;
-    state.providers = result.providers;
-    syncSelects(result.recommendedStudentId);
-    appendLog(result.seeded ? 'デモデータを投入しました' : 'デモデータは投入済みです');
-    await renderGigs();
-    await loadAndRenderDashboard();
-  } catch (error) {
-    appendLog(`デモ投入失敗: ${error.message}`, true);
-  }
-});
+seedDemoButton.addEventListener('click', seedDemo);
+
+if (seedDemoInlineButton) {
+  seedDemoInlineButton.addEventListener('click', async () => {
+    await seedDemo();
+  });
+}
 
 refreshAllButton.addEventListener('click', async () => {
   try {
@@ -591,7 +619,6 @@ gigList.addEventListener('click', async (event) => {
   }
 
   const applyId = target.getAttribute('data-apply');
-  const acceptId = target.getAttribute('data-accept');
 
   if (applyId) {
     try {
@@ -600,29 +627,14 @@ gigList.addEventListener('click', async (event) => {
         return;
       }
 
-      const application = await request(`/api/gigs/${applyId}/apply`, {
+      await request(`/api/gigs/${applyId}/apply`, {
         method: 'POST',
         body: JSON.stringify({ studentId: state.selectedStudentId }),
       });
-      appendLog(`応募完了: ${application.id}`);
+      appendLog(`応募完了`);
       await renderGigs();
     } catch (error) {
       appendLog(`応募失敗: ${error.message}`, true);
-    }
-    return;
-  }
-
-  if (acceptId) {
-    try {
-      await request(`/api/applications/${acceptId}/accept`, {
-        method: 'POST',
-        body: JSON.stringify({}),
-      });
-      appendLog(`採用確定: ${acceptId}`);
-      await renderGigs();
-      await loadAndRenderDashboard();
-    } catch (error) {
-      appendLog(`採用失敗: ${error.message}`, true);
     }
   }
 });
@@ -630,8 +642,6 @@ gigList.addEventListener('click', async (event) => {
 async function bootstrap() {
   try {
     await loadBootstrap();
-    await renderGigs();
-    await loadAndRenderDashboard();
     appendLog('初期化完了');
   } catch (error) {
     appendLog(`初期化失敗: ${error.message}`, true);
