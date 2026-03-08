@@ -1,0 +1,1093 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#fff5fb" />
+    <title>としまスキマクエスト | 学生向け地域タイミー</title>
+    <style>
+      :root {
+        --sakura-50: #fff8fc;
+        --sakura-200: #ffd2e3;
+        --sakura-400: #f486ae;
+        --sakura-500: #e96294;
+        --wakakusa-200: #d8f2ba;
+        --wakakusa-400: #87c665;
+        --wakakusa-600: #4f8d35;
+        --ink-950: #1b2128;
+        --ink-700: #4a5561;
+        --ink-500: #70808f;
+        --line: rgba(27, 33, 40, 0.15);
+        --panel: rgba(255, 255, 255, 0.86);
+        --panel-strong: rgba(255, 255, 255, 0.96);
+        --focus: #1a94ff;
+        --shadow-soft: 0 12px 40px rgba(54, 45, 54, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        color-scheme: light;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink-950);
+        font-family: 'Hiragino Maru Gothic ProN', 'BIZ UDPGothic', 'Yu Gothic', 'Meiryo', sans-serif;
+        background:
+          radial-gradient(circle at 10% 4%, rgba(244, 134, 174, 0.28), transparent 42%),
+          radial-gradient(circle at 90% 12%, rgba(135, 198, 101, 0.26), transparent 48%),
+          linear-gradient(160deg, #fff9fd 0%, #f4fff0 55%, #fffefb 100%);
+        min-height: 100vh;
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+
+      a,
+      button,
+      input,
+      select,
+      textarea {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: rgba(233, 98, 148, 0.2);
+      }
+
+      h1,
+      h2,
+      h3 {
+        text-wrap: balance;
+      }
+
+      :focus-visible {
+        outline: 3px solid var(--focus);
+        outline-offset: 2px;
+      }
+
+      .skip-link {
+        position: absolute;
+        left: 12px;
+        top: -44px;
+        z-index: 1000;
+        background: #fff;
+        color: #111;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        text-decoration: none;
+      }
+
+      .skip-link:focus-visible {
+        top: 10px;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      .hero {
+        position: relative;
+        padding: 26px clamp(14px, 3vw, 36px) 18px;
+      }
+
+      .hero::after {
+        content: '';
+        display: block;
+        margin-top: 16px;
+        height: 7px;
+        border-radius: 999px;
+        background: linear-gradient(96deg, var(--sakura-500), #f8d26f, var(--wakakusa-600));
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        padding: 6px 11px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.74);
+        font-size: 12px;
+        letter-spacing: 0.04em;
+      }
+
+      h1 {
+        margin: 12px 0 8px;
+        font-family: 'Yu Mincho', 'Hiragino Mincho ProN', serif;
+        font-size: clamp(30px, 5vw, 56px);
+        letter-spacing: 0.04em;
+        line-height: 1.08;
+      }
+
+      .lead {
+        margin: 0;
+        max-width: 920px;
+        color: var(--ink-700);
+        font-size: 15px;
+        line-height: 1.75;
+      }
+
+      .hero-tags {
+        margin-top: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .hero-tags span {
+        padding: 5px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.74);
+        font-size: 12px;
+      }
+
+      .mascot {
+        position: absolute;
+        right: clamp(8px, 4vw, 42px);
+        top: 20px;
+        width: 108px;
+        aspect-ratio: 1;
+        border-radius: 24px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(140deg, rgba(244, 134, 174, 0.32), rgba(135, 198, 101, 0.34));
+        border: 1px solid rgba(255, 255, 255, 0.76);
+        box-shadow: var(--shadow-soft);
+        transform: rotate(-8deg);
+        font-size: 44px;
+      }
+
+      .page {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 14px;
+        padding: 14px clamp(10px, 3vw, 30px) 28px;
+      }
+
+      .panel {
+        grid-column: span 12;
+        border-radius: 20px;
+        border: 1px solid var(--line);
+        overflow: hidden;
+        background: var(--panel);
+        box-shadow: var(--shadow-soft);
+        animation: rise 0.4s ease both;
+      }
+
+      .panel-header {
+        border-bottom: 1px solid var(--line);
+        background: linear-gradient(90deg, rgba(255, 210, 227, 0.56), rgba(216, 242, 186, 0.44));
+        padding: 13px 15px;
+      }
+
+      .panel-header h2 {
+        margin: 0;
+        font-size: 17px;
+        letter-spacing: 0.02em;
+      }
+
+      .panel-body {
+        padding: 14px 15px 16px;
+      }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .card-lite {
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        background: var(--panel-strong);
+        padding: 10px;
+      }
+
+      .card-lite h3 {
+        margin: 0 0 8px;
+        font-size: 14px;
+      }
+
+      ul.flat {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      ul.flat li {
+        margin: 6px 0;
+        color: var(--ink-700);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .controls-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .mini-form {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--panel-strong);
+        padding: 10px;
+      }
+
+      .mini-form h3 {
+        margin: 0 0 8px;
+        font-size: 14px;
+      }
+
+      .stack {
+        display: grid;
+        gap: 6px;
+      }
+
+      label {
+        font-size: 12px;
+        color: var(--ink-700);
+      }
+
+      input,
+      select,
+      textarea,
+      button,
+      progress {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.95);
+        font-size: 13px;
+      }
+
+      input,
+      select,
+      textarea {
+        padding: 9px 10px;
+      }
+
+      textarea {
+        min-height: 56px;
+        resize: vertical;
+      }
+
+      button {
+        padding: 9px 10px;
+        cursor: pointer;
+        font-weight: 700;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 18px rgba(56, 48, 52, 0.16);
+      }
+
+      .btn-main {
+        color: #fff;
+        border-color: rgba(244, 134, 174, 0.62);
+        background: linear-gradient(130deg, #ff78ab, #e96294 55%, #8cc769);
+      }
+
+      .btn-sub {
+        color: #fff;
+        border-color: rgba(79, 141, 53, 0.62);
+        background: linear-gradient(130deg, #71b754, #4f8d35);
+      }
+
+      .btn-ghost {
+        background: linear-gradient(130deg, rgba(255, 255, 255, 0.96), rgba(244, 134, 174, 0.15));
+      }
+
+      .quest-toolbar {
+        display: grid;
+        grid-template-columns: 1.35fr 0.8fr 0.8fr 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .quest-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .quest-card {
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        background: var(--panel-strong);
+        padding: 11px;
+      }
+
+      .quest-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .quest-title {
+        margin: 0;
+        font-size: 15px;
+      }
+
+      .quest-meta {
+        margin: 6px 0;
+        color: var(--ink-700);
+        font-size: 12px;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        font-size: 11px;
+        background: rgba(255, 255, 255, 0.88);
+      }
+
+      .chip button {
+        width: auto;
+        border-radius: 999px;
+        padding: 4px 8px;
+        font-size: 11px;
+      }
+
+      .quest-actions {
+        margin-top: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .quest-actions button {
+        width: auto;
+        padding: 7px 12px;
+      }
+
+      .growth-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 12px;
+      }
+
+      .tree-box {
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        background: var(--panel-strong);
+        padding: 10px;
+      }
+
+      .tree-toolbar {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .tree-kpis {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .tree-kpi {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 7px;
+        background: rgba(255, 255, 255, 0.92);
+      }
+
+      .tree-kpi span {
+        display: block;
+        color: var(--ink-500);
+        font-size: 11px;
+      }
+
+      .tree-kpi strong {
+        display: block;
+        margin-top: 4px;
+        font-size: 18px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .tree-stage {
+        margin: 0 0 10px;
+        color: var(--ink-700);
+        font-size: 13px;
+      }
+
+      .tree-visual {
+        position: relative;
+        height: 220px;
+        border-radius: 14px;
+        border: 1px solid rgba(43, 62, 44, 0.2);
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 30% 18%, rgba(255, 255, 255, 0.9), transparent 46%),
+          linear-gradient(to top, rgba(173, 224, 130, 0.55), rgba(255, 255, 255, 0.9));
+      }
+
+      .tree-visual::before {
+        content: '';
+        position: absolute;
+        inset: auto -10% -12px -10%;
+        height: 66px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 50% 20%, rgba(124, 173, 82, 0.45), rgba(76, 122, 47, 0.8));
+      }
+
+      .tree-crown {
+        position: absolute;
+        left: 50%;
+        bottom: 78px;
+        width: 150px;
+        aspect-ratio: 1;
+        transform: translateX(-50%);
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.7), rgba(102, 177, 68, 0.95) 60%, rgba(67, 139, 44, 1));
+        border: 1px solid rgba(255, 255, 255, 0.82);
+        box-shadow: 0 18px 28px rgba(61, 95, 43, 0.28);
+        transition: transform 0.32s ease;
+      }
+
+      .tree-crown::before,
+      .tree-crown::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(117, 186, 79, 0.62);
+      }
+
+      .tree-crown::before {
+        width: 80px;
+        height: 80px;
+        left: -30px;
+        top: 30px;
+      }
+
+      .tree-crown::after {
+        width: 72px;
+        height: 72px;
+        right: -26px;
+        top: 38px;
+      }
+
+      .tree-fruit-cloud {
+        position: absolute;
+        inset: 0;
+      }
+
+      .tree-fruit {
+        position: absolute;
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.32);
+      }
+
+      .tree-trunk {
+        position: absolute;
+        left: 50%;
+        bottom: 34px;
+        width: 24px;
+        height: 40%;
+        transform: translateX(-50%);
+        border-radius: 99px;
+        background: linear-gradient(180deg, #9b6d42, #684422);
+        box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.24);
+        transition: height 0.32s ease;
+      }
+
+      .tree-growth {
+        margin-top: 10px;
+      }
+
+      .tree-growth progress {
+        appearance: none;
+        height: 12px;
+      }
+
+      .tree-growth progress::-webkit-progress-bar {
+        background: rgba(255, 255, 255, 0.92);
+      }
+
+      .tree-growth progress::-webkit-progress-value {
+        background: linear-gradient(90deg, #f18bb0, #f7ce73, #66b144);
+      }
+
+      .tree-growth-meta {
+        margin: 6px 0 0;
+        color: var(--ink-700);
+        font-size: 12px;
+      }
+
+      .fruit-list,
+      .badge-list,
+      .area-map,
+      .thanks-grid,
+      .gallery-grid,
+      .asset-grid,
+      .digest-grid {
+        display: grid;
+        gap: 8px;
+      }
+
+      .fruit-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin-top: 10px;
+      }
+
+      .fruit-item,
+      .badge-item,
+      .asset-card,
+      .digest-item {
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: var(--panel-strong);
+        padding: 8px;
+      }
+
+      .fruit-item strong,
+      .badge-item strong {
+        font-size: 13px;
+      }
+
+      .fruit-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 6px;
+        vertical-align: middle;
+      }
+
+      .map-badges {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .map-badges span {
+        color: var(--ink-700);
+        font-size: 12px;
+      }
+
+      .area-map {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .area-cell {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 6px;
+        text-align: center;
+        font-size: 11px;
+        background: rgba(255, 255, 255, 0.85);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .area-cell.colored {
+        background: linear-gradient(160deg, rgba(244, 134, 174, 0.24), rgba(135, 198, 101, 0.3));
+      }
+
+      .badge-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: 10px;
+      }
+
+      .badge-item.earned {
+        border-color: rgba(79, 141, 53, 0.55);
+        background: linear-gradient(120deg, rgba(216, 242, 186, 0.68), rgba(255, 255, 255, 0.96));
+      }
+
+      .badge-item .progress {
+        margin-top: 6px;
+        color: var(--ink-700);
+        font-size: 11px;
+      }
+
+      .thanks-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .sticky-note {
+        min-height: 110px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px;
+        box-shadow: 0 8px 18px rgba(43, 35, 35, 0.08);
+        transform: rotate(-1deg);
+      }
+
+      .sticky-note.fresh {
+        background: rgba(222, 248, 208, 0.9);
+      }
+
+      .sticky-note.warm {
+        background: rgba(255, 236, 208, 0.93);
+      }
+
+      .sticky-note p {
+        margin: 0 0 8px;
+        font-size: 12px;
+        line-height: 1.56;
+      }
+
+      .sticky-note span {
+        font-size: 11px;
+        color: var(--ink-700);
+      }
+
+      .gallery-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        margin-top: 8px;
+      }
+
+      .gallery-item {
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: var(--panel-strong);
+        padding: 10px;
+      }
+
+      .gallery-icon {
+        font-size: 28px;
+        margin-bottom: 6px;
+      }
+
+      .gallery-item strong {
+        display: block;
+        font-size: 12px;
+      }
+
+      .gallery-item span {
+        display: block;
+        color: var(--ink-700);
+        font-size: 11px;
+      }
+
+      .asset-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .asset-card strong {
+        display: block;
+        color: var(--ink-500);
+        font-size: 12px;
+      }
+
+      .asset-card b {
+        display: block;
+        margin-top: 5px;
+        font-family: 'Yu Mincho', 'Hiragino Mincho ProN', serif;
+        font-size: 19px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .meter-box {
+        margin-top: 10px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .meter-item {
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.9);
+        padding: 8px;
+      }
+
+      .meter-item progress {
+        appearance: none;
+        height: 12px;
+      }
+
+      .meter-item progress::-webkit-progress-bar {
+        background: rgba(255, 255, 255, 0.94);
+      }
+
+      .meter-item progress::-webkit-progress-value {
+        background: linear-gradient(90deg, #f58eb3, #f5c96a, #63ac44);
+      }
+
+      .meter-label {
+        margin-top: 5px;
+        color: var(--ink-700);
+        font-size: 11px;
+      }
+
+      .digest-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: 10px;
+      }
+
+      .digest-item strong {
+        font-size: 12px;
+        color: var(--ink-500);
+      }
+
+      .digest-item b {
+        display: block;
+        margin-top: 5px;
+        font-size: 18px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .log-feed {
+        max-height: 230px;
+        overflow: auto;
+        border-radius: 10px;
+        border: 1px dashed rgba(63, 73, 81, 0.34);
+        background: rgba(255, 255, 255, 0.62);
+        padding: 8px;
+      }
+
+      .log-feed p {
+        margin: 0 0 8px;
+        font-size: 12px;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+
+        .mascot {
+          transform: none;
+        }
+      }
+
+      @media (max-width: 1080px) {
+        .controls-grid,
+        .growth-grid,
+        .quest-toolbar,
+        .badge-list,
+        .thanks-grid,
+        .gallery-grid,
+        .asset-grid,
+        .digest-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .mascot {
+          position: static;
+          margin-top: 10px;
+          transform: none;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .two-col,
+        .controls-grid,
+        .growth-grid,
+        .quest-toolbar,
+        .fruit-list,
+        .area-map,
+        .badge-list,
+        .thanks-grid,
+        .gallery-grid,
+        .asset-grid,
+        .digest-grid,
+        .tree-kpis {
+          grid-template-columns: 1fr;
+        }
+
+        .panel {
+          border-radius: 16px;
+        }
+
+        .hero {
+          padding-top: 16px;
+        }
+
+        .tree-toolbar {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">メインコンテンツへスキップ</a>
+
+    <header class="hero">
+      <span class="eyebrow">豊島区限定 / 学生向けスキマクエスト</span>
+      <h1>としまスキマクエスト</h1>
+      <p class="lead">
+        空きコマ30〜60分を、地域の困りごと解決に変える。お金だけでなく、和菓子・まかない・イベント招待など
+        「その場所ならでは」のおもてなし報酬も可視化し、学生の行動変容を生み出す設計。
+      </p>
+      <div class="hero-tags">
+        <span>対象学生: 豊島区内の高校・大学</span>
+        <span>対象事業者: 個人事業主・公民館など</span>
+        <span>目的: 空きコマで地域接点をつくる</span>
+      </div>
+      <div class="mascot" aria-hidden="true">◔◡◔</div>
+    </header>
+
+    <main id="main-content" class="page">
+      <section class="panel">
+        <div class="panel-header">
+          <h2>課題と目標（最初に挙げた課題 + 自分たちで立てた目標）</h2>
+        </div>
+        <div class="panel-body two-col">
+          <article class="card-lite">
+            <h3>課題</h3>
+            <ul class="flat">
+              <li>学生の空きコマと地域の30〜60分ニーズが接続されていない</li>
+              <li>単発貢献が可視化されず、継続参加の動機が弱い</li>
+              <li>金銭以外報酬の魅力が伝わらず、応募率が伸びづらい</li>
+              <li>将来メリットが見えず、地域定着インセンティブが薄い</li>
+            </ul>
+          </article>
+          <article class="card-lite">
+            <h3>目標</h3>
+            <ul class="flat">
+              <li>空きコマ入力で周辺クエストが直感的にマッチするUIを実装</li>
+              <li>トシマ・ツリーと地図可視化で再参加率を高める</li>
+              <li>サンクス・ウォールで感情価値を蓄積し、行動継続を促進</li>
+              <li>2040アセット表示で長期定住の意思決定を後押しする</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>運用コントロール（登録・募集・デモ投入）</h2>
+        </div>
+        <div class="panel-body">
+          <div class="controls-grid">
+            <form id="student-form" class="mini-form stack" autocomplete="off">
+              <h3>学生登録</h3>
+              <label for="student-name">名前</label>
+              <input id="student-name" name="name" autocomplete="name" required />
+              <label for="student-school-name">学校名</label>
+              <input id="student-school-name" name="schoolName" autocomplete="organization" required />
+              <label for="student-school-type">学校種別</label>
+              <select id="student-school-type" name="schoolType" required>
+                <option value="highschool">高校</option>
+                <option value="university">大学</option>
+              </select>
+              <label for="student-ward">学校所在地の区</label>
+              <input id="student-ward" name="ward" value="豊島区" autocomplete="address-level2" required />
+              <button type="submit" class="btn-main">学生を登録</button>
+            </form>
+
+            <form id="provider-form" class="mini-form stack" autocomplete="off">
+              <h3>事業者登録</h3>
+              <label for="provider-name">事業者名</label>
+              <input id="provider-name" name="name" autocomplete="organization" required />
+              <label for="provider-type">事業者種別</label>
+              <select id="provider-type" name="providerType" required>
+                <option value="sole_proprietor">個人事業主</option>
+                <option value="community_facility">地域施設</option>
+              </select>
+              <label for="provider-ward">拠点区</label>
+              <input id="provider-ward" name="ward" value="豊島区" autocomplete="address-level2" required />
+              <button type="submit" class="btn-sub">事業者を登録</button>
+            </form>
+
+            <form id="gig-form" class="mini-form stack" autocomplete="off">
+              <h3>クエスト募集作成</h3>
+              <label for="provider-select">投稿者（事業者）</label>
+              <select name="providerId" id="provider-select" required></select>
+              <label for="gig-title">タイトル</label>
+              <input id="gig-title" name="title" required placeholder="例: ベビーカー階段サポート…" />
+              <label for="gig-description">説明</label>
+              <textarea id="gig-description" name="description" required></textarea>
+              <label for="gig-category">カテゴリ</label>
+              <input id="gig-category" name="category" required placeholder="移動助っ人…" />
+              <label for="location-area">エリア</label>
+              <select name="locationArea" id="location-area">
+                <option>池袋</option>
+                <option>目白</option>
+                <option>大塚</option>
+                <option>巣鴨</option>
+                <option>駒込</option>
+                <option>雑司が谷</option>
+                <option>要町</option>
+                <option>千川</option>
+              </select>
+              <label for="gig-duration">所要時間（分）</label>
+              <input id="gig-duration" name="durationMinutes" type="number" inputmode="numeric" min="15" max="120" required />
+              <label for="reward-type">報酬種別</label>
+              <select name="rewardType" id="reward-type" required>
+                <option value="cash">現金</option>
+                <option value="hospitality">おもてなし</option>
+              </select>
+              <label id="reward-label" for="reward-value">金額（円）</label>
+              <input name="rewardValue" id="reward-value" required />
+              <button type="submit" class="btn-main">クエスト公開</button>
+            </form>
+          </div>
+          <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" id="seed-demo" class="btn-ghost">デモデータを投入</button>
+            <button type="button" id="refresh-all" class="btn-ghost">全体を再読み込み</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>タスク画面: 空きコママッチングクエスト</h2>
+        </div>
+        <div class="panel-body">
+          <div class="quest-toolbar">
+            <label class="sr-only" for="slot-template">空きコマテンプレート</label>
+            <select id="slot-template">
+              <option value="">空きコマテンプレートを選択</option>
+              <option value="campus_morning">1限後の30分（池袋周辺）</option>
+              <option value="between_classes">空きコマ60分（目白周辺）</option>
+              <option value="after_school">放課後45分（巣鴨周辺）</option>
+            </select>
+
+            <label class="sr-only" for="slot-minutes">空き時間（分）</label>
+            <input id="slot-minutes" type="number" inputmode="numeric" min="15" max="120" value="60" placeholder="空き時間（分）…" />
+
+            <label class="sr-only" for="slot-area-filter">エリア絞り込み</label>
+            <select id="slot-area-filter">
+              <option value="">エリア指定なし</option>
+              <option>池袋</option>
+              <option>目白</option>
+              <option>大塚</option>
+              <option>巣鴨</option>
+              <option>駒込</option>
+              <option>雑司が谷</option>
+              <option>要町</option>
+              <option>千川</option>
+            </select>
+
+            <label class="sr-only" for="category-filter">カテゴリ絞り込み</label>
+            <input id="category-filter" placeholder="カテゴリ絞り込み…" />
+
+            <label class="sr-only" for="student-apply-select">応募する学生</label>
+            <select id="student-apply-select"></select>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
+            <button id="refresh-gigs" class="btn-sub" type="button">クエスト再取得</button>
+            <span style="font-size: 12px; color: var(--ink-700); align-self: center;">和菓子・賄い・招待はアイコンで表示</span>
+          </div>
+          <div class="quest-list" id="gig-list"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>マイページ: トシマ・ツリー</h2>
+        </div>
+        <div class="panel-body growth-grid">
+          <article class="tree-box">
+            <div class="tree-toolbar">
+              <label class="sr-only" for="student-dashboard-select">表示する学生</label>
+              <select id="student-dashboard-select"></select>
+              <button id="refresh-dashboard" type="button" class="btn-sub">マイページ更新</button>
+            </div>
+
+            <div class="tree-kpis">
+              <div class="tree-kpi"><span>総活動</span><strong id="tree-kpi-count">0回</strong></div>
+              <div class="tree-kpi"><span>出会い人数</span><strong id="tree-kpi-people">0人</strong></div>
+              <div class="tree-kpi"><span>累計時間</span><strong id="tree-kpi-time">0分</strong></div>
+            </div>
+
+            <p id="tree-stage" class="tree-stage" aria-live="polite">活動データを読み込み中…</p>
+
+            <div class="tree-visual" role="img" aria-label="活動に応じて成長するトシマ・ツリー">
+              <div id="tree-crown" class="tree-crown">
+                <div id="tree-fruit-cloud" class="tree-fruit-cloud" aria-hidden="true"></div>
+              </div>
+              <div id="tree-trunk" class="tree-trunk"></div>
+            </div>
+
+            <div class="tree-growth">
+              <label for="tree-growth-progress">成長ゲージ</label>
+              <progress id="tree-growth-progress" max="100" value="0"></progress>
+              <p id="tree-growth-meta" class="tree-growth-meta">0%色づき</p>
+            </div>
+
+            <div id="virtue-fruits" class="fruit-list"></div>
+          </article>
+
+          <article class="tree-box">
+            <div class="map-badges">
+              <span>豊島区マップの色づき</span>
+              <span id="map-rate">0%</span>
+            </div>
+            <div id="area-map" class="area-map"></div>
+            <div id="badge-list" class="badge-list"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>交流ログ: サンクス・ウォール</h2>
+        </div>
+        <div class="panel-body">
+          <div id="thanks-wall" class="thanks-grid" aria-live="polite"></div>
+          <h3 style="margin: 12px 0 6px; font-size: 14px;">おもてなしギャラリー</h3>
+          <div id="hospitality-gallery" class="gallery-grid"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>2040年への予約: アセット・ダッシュボード</h2>
+        </div>
+        <div class="panel-body">
+          <div id="asset-grid" class="asset-grid"></div>
+          <div id="asset-meters" class="meter-box"></div>
+          <div id="digest-list" class="digest-grid"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>システムログ</h2>
+        </div>
+        <div class="panel-body">
+          <div id="log-feed" class="log-feed" role="status" aria-live="polite" aria-atomic="false"></div>
+        </div>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
