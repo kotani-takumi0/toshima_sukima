@@ -1,0 +1,9 @@
+.claude/
+.codex/
+.kiro/
+AGENTS.md
+CLAUDE.md
+package.json
+public/
+src/
+tests/
